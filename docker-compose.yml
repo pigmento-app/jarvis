@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  jarvis_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      PGHOST: jarvis_postgres
+      PGUSER: user
+      PGDATABASE: db_jarvis
+      PGPASSWORD: password
+    depends_on:
+      - jarvis_postgres
+    volumes:
+      - ./src/:/app/src
+
+  jarvis_postgres:
+    image: postgres:latest
+    ports:
+      - "4000:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_jarvis
+
+  jarvis_pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - jarvis_postgres
