@@ -12,11 +12,8 @@ const upload = multer({ dest: "uploads/" });
 
 // Route pour recevoir un fichier
 router.post("/", upload.single("file"), async (req: Request, res: Response) => {
-  console.log("BODY", req.body);
   const color = app.locals.color;
   // Le fichier est accessible via req.file
-
-  console.log("FILE", req.file);
   const file = req.file;
 
   if (!file) {
