@@ -2,28 +2,40 @@ import "reflect-metadata";
 import { AppDataSource } from "./database/data-source";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import * as http from "http";
 import usersRoutes from "./controllers/users.controller";
+import uploadsRoutes from "./controllers/uploads.controller";
 
-const app = express();
+export const app = express();
 
+// Init app express
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || 5001;
 
+// Variable globale
+app.locals.color = {
+  luminance: 63,
+  greenRed: 44,
+  blueYellow: -18,
+};
+
+// Route de test pour vérifier la variable globale
 app.get("/test", (req, res) => {
-  res.send("Hello, World!");
+  res.send(`Hello, World! Variable globale: ${app.locals.globalVariable}`);
 });
 
-// Montez les routes des utilisateurs et des conversations sur votre application
+// Routes
 app.use("/api/users", usersRoutes);
+app.use("/api/uploads", uploadsRoutes);
 
+// Middleware de gestion des erreurs
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
   res.status(500).send({ message: "Something went wrong", error: err.message });
 });
 
+// Bootstraping
 async function bootstrap(): Promise<void> {
   try {
     // Connexion à la base de donnée (Attente de la connexion avant de passer à la suite)
