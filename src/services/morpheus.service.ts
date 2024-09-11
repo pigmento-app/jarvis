@@ -2,6 +2,23 @@ import { ColorLab } from "../types/color";
 import { ImageAnalyseInfos } from "../types/image";
 import http from 'http';
 import fs from 'fs';
+import path from 'path';
+
+// Fonction pour nettoyer le dossier uploads
+const cleanUploads = () => {
+  const uploadsDir = path.join(__dirname, '../../uploads');
+
+  fs.readdir(uploadsDir, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files) {
+      fs.unlink(path.join(uploadsDir, file), (err) => {
+        if (err) throw err;
+        console.log(`${file} supprimé.`);
+      });
+    }
+  });
+};
 
 // Fonction pour envoyer le fichier vers une autre API
 export const analyseImage = async (
@@ -36,7 +53,10 @@ export const analyseImage = async (
             number_of_pixel_with_delta_minus_or_equal_20: dataObject.number_of_pixel_with_delta_minus_or_equal_20,
             number_of_pixel_with_delta_minus_or_equal_5: dataObject.number_of_pixel_with_delta_minus_or_equal_5,
           });
-        } catch (error:any) {
+          
+          // Nettoyer le dossier après la réponse du serveur
+          cleanUploads();
+        } catch (error: any) {
           reject(`Erreur lors de l'analyse de la réponse : ${error.message}`);
         }
       });
