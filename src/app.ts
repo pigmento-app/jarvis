@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import usersRoutes from "./controllers/users.controller";
 import uploadsRoutes from "./controllers/uploads.controller";
+import colorsRoutes from "./controllers/colors.controller";
 import * as colorsService from "../src/services/colors.service";
 
 export const app = express();
@@ -27,6 +28,7 @@ app.get("/test", (req, res) => {
 // Routes
 app.use("/api/users", usersRoutes);
 app.use("/api/uploads", uploadsRoutes);
+app.use("/api/colors", colorsRoutes);
 
 // Middleware de gestion des erreurs
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
