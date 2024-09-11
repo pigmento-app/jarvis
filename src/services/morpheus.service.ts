@@ -1,39 +1,67 @@
 import { ColorLab } from "../types/color";
 import { ImageAnalyseInfos } from "../types/image";
+import http from 'http';
+import fs from 'fs';
 
 // Fonction pour envoyer le fichier vers une autre API
 export const analyseImage = async (
   file: Express.Multer.File,
   color: ColorLab
 ): Promise<ImageAnalyseInfos> => {
-  // ! A faire la requête pour envoyer l'image et la couleur à Morpheus
-  console.log("FILE:", file);
-  console.log("COLOR:", color);
-  return {
-    average_distance: 7,
-    color: [63, 44, -18],
-    number_of_pixel_with_delta_minus_or_equal_20: 88356,
-    number_of_pixel_with_delta_minus_or_equal_5: 0,
-  };
-  // Créez un objet FormData pour envoyer le fichier vers l'autre API
-  // const formData = new FormData();
-  // formData.append("file", fs.createReadStream(file.path)); // Lecture du fichier temporaire
-  // // Envoyez le fichier via axios à l'autre API
-  // const response = await axios.post(
-  //   "https://exemple.com/api/upload",
-  //   formData,
-  //   {
-  //     headers: {
-  //       ...formData.getHeaders(),
-  //     },
-  //   }
-  // );
-  // // Suppression du fichier temporaire après l'envoi (optionnel)
-  // fs.unlink(file.path, (err) => {
-  //   if (err)
-  //     console.error(
-  //       "Erreur lors de la suppression du fichier temporaire:",
-  //       err
-  //     );
-  // });
+  return new Promise((resolve, reject) => {
+    const boundary = '----WebKitFormBoundary' + Math.random().toString(16);
+    const fileStream = fs.createReadStream(file.path);
+
+    const options = {
+      hostname: '192.168.162.250',
+      port: 5080,
+      path: '/distance_color',
+      method: 'POST',
+      headers: {
+        'Content-Type': `multipart/form-data; boundary=${boundary}`,
+      },
+    };
+
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          const dataObject = JSON.parse(data);
+          resolve({
+            average_distance: dataObject.average_distance,
+            color: dataObject.color,
+            number_of_pixel_with_delta_minus_or_equal_20: dataObject.number_of_pixel_with_delta_minus_or_equal_20,
+            number_of_pixel_with_delta_minus_or_equal_5: dataObject.number_of_pixel_with_delta_minus_or_equal_5,
+          });
+        } catch (error:any) {
+          reject(`Erreur lors de l'analyse de la réponse : ${error.message}`);
+        }
+      });
+    });
+
+    req.on('error', (e) => {
+      reject(`Erreur de requête : ${e.message}`);
+    });
+
+    // FormData multipart
+    req.write(`--${boundary}\r\n`);
+    req.write(`Content-Disposition: form-data; name="image"; filename="${file.filename}"\r\n`);
+    req.write(`Content-Type: ${file.mimetype}\r\n\r\n`);
+
+    // Envoyer l'image
+    fileStream.pipe(req, { end: false });
+    fileStream.on('end', () => {
+      req.write(`\r\n--${boundary}\r\n`);
+      req.write(`Content-Disposition: form-data; name="luminance"\r\n\r\n${color.luminance}\r\n`);
+      req.write(`--${boundary}\r\n`);
+      req.write(`Content-Disposition: form-data; name="greenRed"\r\n\r\n${color.greenRed}\r\n`);
+      req.write(`--${boundary}\r\n`);
+      req.write(`Content-Disposition: form-data; name="blueYellow"\r\n\r\n${color.blueYellow}\r\n`);
+      req.write(`--${boundary}--\r\n`);
+      req.end();
+    });
+  });
 };
