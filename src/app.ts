@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import usersRoutes from "./controllers/users.controller";
 import uploadsRoutes from "./controllers/uploads.controller";
+import * as colorsService from "../src/services/colors.service";
 
 export const app = express();
 
@@ -14,15 +15,13 @@ app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || 5001;
 
 // Variable globale
-app.locals.color = {
-  luminance: 63,
-  greenRed: 44,
-  blueYellow: -18,
-};
+app.locals.color = colorsService.generateRandomLBAColor();
 
 // Route de test pour vérifier la variable globale
 app.get("/test", (req, res) => {
-  res.send(`Hello, World! Variable globale: ${app.locals.globalVariable}`);
+  res.send(
+    `Hello, World! The daily color has luminance: ${app.locals.color.luminance}, greenRed: ${app.locals.color.greenRed}, blueYellow: ${app.locals.color.blueYellow} `
+  );
 });
 
 // Routes
