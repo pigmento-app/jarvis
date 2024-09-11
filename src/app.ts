@@ -46,6 +46,9 @@ async function bootstrap(): Promise<void> {
     // Start Express server
     const server = app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
+      console.log(
+        `The daily color has luminance: ${app.locals.color.luminance}, greenRed: ${app.locals.color.greenRed}, blueYellow: ${app.locals.color.blueYellow}`
+      );
     });
   } catch (error) {
     console.log("DB connexion failed");
