@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import admin from 'firebase-admin';
 import cron from 'node-cron';
 
-const serviceAccount = require('./firebase.json');
+const serviceAccount = require('../../pigmento-d89f9-firebase-adminsdk-4c7o5-3f1c994b8c.json');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
