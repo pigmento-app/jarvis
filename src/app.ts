@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 const port = process.env.PORT || 5001;
 
 // Variable globale
-app.locals.color = colorsService.generateRandomLBAColor();
+app.locals.color = colorsService.generateColorBasedOnDay();
 
 // Route de test pour vérifier la variable globale
 app.get('/test', (req, res) => {
