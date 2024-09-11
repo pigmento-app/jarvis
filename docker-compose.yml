@@ -16,6 +16,7 @@ services:
       - jarvis_postgres
     volumes:
       - ./src/:/app/src
+      - ./uploads:/app/uploads
 
   jarvis_postgres:
     image: postgres:latest
