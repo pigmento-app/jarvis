@@ -29,8 +29,10 @@ export const analyseImage = async (
     const boundary = "----WebKitFormBoundary" + Math.random().toString(16);
     const fileStream = fs.createReadStream(file.path);
 
+    console.log("FILE SIZE", file.size);
+
     const options = {
-      hostname: "192.168.34.211",
+      hostname: "192.168.243.211",
       port: 5080,
       path: "/distance_color",
       method: "POST",
@@ -48,12 +50,30 @@ export const analyseImage = async (
         try {
           const dataObject = JSON.parse(data);
           resolve({
-            average_distance: dataObject.average_distance,
+            average_distance_max_delta_percent:
+              dataObject.average_distance_max_delta_percent,
             color: dataObject.color,
-            number_of_pixel_with_delta_minus_or_equal_20:
-              dataObject.number_of_pixel_with_delta_minus_or_equal_20,
-            number_of_pixel_with_delta_minus_or_equal_5:
-              dataObject.number_of_pixel_with_delta_minus_or_equal_5,
+            number_of_pixel_with_delta_upper_90_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_upper_90_percent_max_delta,
+            number_of_pixel_with_delta_90_80_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_90_80_percent_max_delta,
+            number_of_pixel_with_delta_80_70_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_80_70_percent_max_delta,
+            number_of_pixel_with_delta_70_60_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_70_60_percent_max_delta,
+            number_of_pixel_with_delta_60_50_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_60_50_percent_max_delta,
+            number_of_pixel_with_delta_50_40_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_50_40_percent_max_delta,
+            number_of_pixel_with_delta_40_30_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_40_30_percent_max_delta,
+            number_of_pixel_with_delta_30_20_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_30_20_percent_max_delta,
+            number_of_pixel_with_delta_20_10_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_20_10_percent_max_delta,
+            number_of_pixel_with_delta_minus_or_equal_10_percent_max_delta:
+              dataObject.number_of_pixel_with_delta_minus_or_equal_10_percent_max_delta,
+            size: dataObject.size,
           });
 
           // Nettoyer le dossier après la réponse du serveur
