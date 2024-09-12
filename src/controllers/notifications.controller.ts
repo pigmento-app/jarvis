@@ -32,6 +32,8 @@ const sendNotification = async () => {
   }
 };
 
+router.get("/testSend", sendNotification);
+
 cron.schedule("0 9-22 * * *", sendNotification);
 
 export default router;
