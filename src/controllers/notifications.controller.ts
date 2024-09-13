@@ -9,7 +9,14 @@ const tokens: string[] = [];
 const router = express.Router();
 
 router.post('/register', (req: Request, res: Response) => {
+	if (tokens.includes(req.body.token)) {
+		console.log('Token already registered:', req.body.token);
+
+		return;
+	}
+
 	tokens.push(req.body.token);
+	console.log('Token registered:', req.body.token);
 });
 
 const sendNotificationWithResponse = async (res: Response) => {
@@ -37,7 +44,7 @@ const sendNotification = async () => {
 	const messages = validTokens.map((token) => ({
 		to: token,
 		title: '⚠️ Time to Pigmento ⚠️',
-		body: '5 min left to capture a Pigmento and see how close your were to the real color!',
+		body: '5 min left to capture a Pigmento and see how close you were to the real color!',
 	}));
 
 	// Send notifications
@@ -52,6 +59,7 @@ const sendNotification = async () => {
 };
 
 router.get('/testSend', (req: Request, res: Response) => {
+	console.log('Sending to tokens:' + tokens);
 	sendNotificationWithResponse(res);
 });
 
